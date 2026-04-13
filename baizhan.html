@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>燕云十六声 · 百战燕云 | Roguelike文字地牢</title>
+    <title>燕云十六声 · 百战燕云 | 完整扩展版</title>
     <style>
         * {
             box-sizing: border-box;
@@ -21,9 +21,8 @@
             margin: 0;
         }
 
-        /* 主面板 古朴残卷风格 */
         .game-container {
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             background: #1e1b17;
             background-image: radial-gradient(circle at 15% 30%, rgba(80, 60, 40, 0.3) 1.5%, transparent 2%);
@@ -34,13 +33,11 @@
             overflow: hidden;
         }
 
-        /* 顶栏 狼烟风格 */
         .game-header {
             background: #0f0b07;
             padding: 14px 20px;
             text-align: center;
             border-bottom: 2px solid #b87c4a;
-            box-shadow: inset 0 -1px 0 #3a2a1a;
         }
 
         .game-header h1 {
@@ -49,40 +46,36 @@
             letter-spacing: 5px;
             color: #e6c394;
             text-shadow: 3px 3px 0 #2a1a0a;
-            font-weight: 600;
         }
 
         .game-header p {
             margin: 4px 0 0;
             font-size: 0.7rem;
             color: #aa8a5a;
-            font-style: italic;
         }
 
-        /* 状态栏 气血/内力/层数 */
         .stats-panel {
             background: #1f1912cc;
             backdrop-filter: blur(5px);
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             padding: 12px 20px;
             border-bottom: 1px solid #785e38;
             color: #f7e5c2;
             font-weight: bold;
-            font-size: 1rem;
-            text-shadow: 1px 1px 0 #1f140a;
+            font-size: 0.9rem;
+            gap: 8px;
         }
 
         .stat {
             background: #00000066;
             padding: 4px 12px;
             border-radius: 30px;
-            letter-spacing: 1px;
         }
 
-        /* 剧情/战斗描述区域 */
         .story-area {
-            min-height: 240px;
+            min-height: 260px;
             background: #faf2e0;
             margin: 18px 22px;
             padding: 20px 22px;
@@ -92,7 +85,6 @@
             line-height: 1.5;
             color: #2c2418;
             font-weight: 500;
-            font-family: 'Segoe UI', 'Courier New', monospace;
         }
 
         .story-text {
@@ -100,7 +92,6 @@
             word-break: break-word;
         }
 
-        /* 选项/战斗按钮区域 */
         .choices-area {
             padding: 8px 20px 28px 20px;
             display: flex;
@@ -113,7 +104,7 @@
             border: none;
             padding: 12px 18px;
             border-radius: 60px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
             font-family: inherit;
             color: #fceeca;
@@ -147,30 +138,35 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #1f1a10;
             box-shadow: inset 0 1px 2px #ffcf8a;
         }
 
-        .reset-btn {
-            display: block;
-            width: calc(100% - 44px);
-            margin: 5px auto 22px auto;
+        .reset-btn, .difficulty-btn {
+            display: inline-block;
             background: #3e2c1c;
             border: none;
-            padding: 10px;
+            padding: 10px 16px;
             border-radius: 40px;
             font-weight: bold;
             color: #eedbaa;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.1s;
             font-family: inherit;
+            margin: 0 4px;
         }
 
-        .reset-btn:hover {
+        .reset-btn:hover, .difficulty-btn:hover {
             background: #5e422c;
             color: #fff0cf;
+        }
+
+        .difficulty-bar {
+            text-align: center;
+            padding: 8px 20px;
+            background: #16120e;
+            border-top: 1px solid #4a3a2a;
         }
 
         footer {
@@ -180,9 +176,11 @@
             color: #9a7a54;
             padding: 8px;
         }
-        .danger-text {
-            color: #c24a2c;
-            font-weight: bold;
+
+        .relic-list {
+            font-size: 0.7rem;
+            color: #c9aa6f;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -190,205 +188,290 @@
 <div class="game-container">
     <div class="game-header">
         <h1>⚔️ 百战燕云 ⚔️</h1>
-        <p>│ 燕云十六声 · Roguelike地牢 │ 一入江湖 岁月催 │</p>
+        <p>│ 完整扩展版 · 30武学 · 20敌人 · 遗物传承 │</p>
     </div>
     <div class="stats-panel">
         <span class="stat">❤️ 气血：<span id="hpValue">0</span>/<span id="maxHpValue">0</span></span>
         <span class="stat">🌀 内力：<span id="mpValue">0</span>/<span id="maxMpValue">0</span></span>
         <span class="stat">🗡️ 攻击：<span id="atkValue">0</span></span>
+        <span class="stat">🛡️ 防御：<span id="defValue">0</span></span>
         <span class="stat">🏆 层数：<span id="floorValue">0</span></span>
     </div>
     <div class="story-area">
         <div class="story-text" id="storyText">
-            燕云乱世，烽烟再起。<br>
-            你于破庙中醒来，身无长物，唯有一腔热血。<br>
-            前方是百死一生的地牢「幽冥渊」，据说闯过十八层者可得绝世武学。<br><br>
-            按【开始闯关】，踏入生死轮回。
+            燕云乱世，幽冥渊现世。<br>
+            传说闯过十八层者可获绝世武学，但从未有人生还。<br><br>
+            「百战不死，方为雄」<br><br>
+            选择难度，开始你的轮回之旅。
         </div>
+        <div class="relic-list" id="relicDisplay"></div>
     </div>
-    <div class="choices-area" id="choicesContainer">
-        <button class="action-btn" id="startGameBtn"><span class="prefix-icon">⚡</span><span>开始闯关 · 入幽冥渊</span></button>
+    <div class="choices-area" id="choicesContainer"></div>
+    <div class="difficulty-bar">
+        <span style="color:#aa8a5a;">⚔️ 难度：</span>
+        <button class="difficulty-btn" id="easyDiff">🌿 初入江湖</button>
+        <button class="difficulty-btn" id="normalDiff">⚡ 仗剑天涯</button>
+        <button class="difficulty-btn" id="hardDiff">💀 修罗炼狱</button>
     </div>
     <button class="reset-btn" id="resetGameBtn">✧ 重入轮回 (新游戏) ✧</button>
-    <footer>⚔️ 永久死亡 · 随机武学 · 每一次都是新的江湖</footer>
+    <footer>⚔️ 永久死亡 · 30+武学 · 20种敌人 · 12遗物 · 每局独一无二</footer>
 </div>
 
 <script>
-    // ---------- Roguelike 核心 ----------
-    let gameActive = false;     // 游戏是否进行中
-    let currentFloor = 1;
-    let player = {
-        maxHp: 0,
-        hp: 0,
-        maxMp: 0,
-        mp: 0,
-        attack: 0,
-        // 武学
-        skill1: { name: "", desc: "", costMp: 0, dmgBonus: 0, effect: "" },
-        skill2: { name: "", desc: "", costMp: 0, dmgBonus: 0, effect: "" },
-        // 遗物列表
-        relics: []
-    };
-
-    let currentEnemy = null;
-    let inBattle = false;
-
-    // ---------- 武学库 ----------
+    // ==================== 扩展武学库（30种）====================
     const martialArts = [
-        { name: "太极剑法", desc: "以柔克刚，剑气连绵", costMp: 4, dmgBonus: 12, effect: "normal" },
-        { name: "降龙掌法", desc: "刚猛无铸，震退敌人", costMp: 5, dmgBonus: 16, effect: "normal" },
-        { name: "凌波微步", desc: "翩若惊鸿，闪避增幅", costMp: 3, dmgBonus: 4, effect: "dodge_up" },
-        { name: "六脉神剑", desc: "无形剑气，破甲穿云", costMp: 6, dmgBonus: 14, effect: "armor_break" },
-        { name: "九阳神功", desc: "内力澎湃，恢复气血", costMp: 4, dmgBonus: 0, effect: "heal" },
-        { name: "独孤九剑", desc: "破尽天下武学", costMp: 5, dmgBonus: 15, effect: "crit" },
-        { name: "黯然销魂掌", desc: "情殇之力", costMp: 5, dmgBonus: 13, effect: "normal" },
-        { name: "打狗棒法", desc: "天下无狗", costMp: 4, dmgBonus: 11, effect: "stun" }
+        { name: "太极剑法", costMp: 4, dmgBonus: 12, effect: "normal", desc: "以柔克刚，剑气连绵" },
+        { name: "降龙掌法", costMp: 5, dmgBonus: 16, effect: "normal", desc: "刚猛无铸，掌掌生风" },
+        { name: "凌波微步", costMp: 3, dmgBonus: 4, effect: "dodge", desc: "翩若惊鸿，闪避大增" },
+        { name: "六脉神剑", costMp: 6, dmgBonus: 14, effect: "armor", desc: "无形剑气，破甲穿云" },
+        { name: "九阳神功", costMp: 4, dmgBonus: 0, effect: "heal", desc: "内力澎湃，恢复气血" },
+        { name: "独孤九剑", costMp: 5, dmgBonus: 15, effect: "crit", desc: "破尽天下武学" },
+        { name: "黯然销魂掌", costMp: 5, dmgBonus: 13, effect: "normal", desc: "情殇之力，威力莫测" },
+        { name: "打狗棒法", costMp: 4, dmgBonus: 11, effect: "stun", desc: "天下无狗，棒打群邪" },
+        { name: "蛤蟆功", costMp: 4, dmgBonus: 14, effect: "charge", desc: "蓄力一击，势不可挡" },
+        { name: "一阳指", costMp: 4, dmgBonus: 10, effect: "heal", desc: "治病救人，亦可杀敌" },
+        { name: "北冥神功", costMp: 5, dmgBonus: 8, effect: "steal", desc: "吸人内力为己用" },
+        { name: "天山折梅手", costMp: 4, dmgBonus: 12, effect: "stun", desc: "分筋错骨，擒拿绝技" },
+        { name: "火焰刀", costMp: 5, dmgBonus: 15, effect: "burn", desc: "掌风如火，灼烧敌人" },
+        { name: "龙爪手", costMp: 4, dmgBonus: 11, effect: "stun", desc: "擒拿锁喉，分筋错骨" },
+        { name: "金刚不坏体", costMp: 4, dmgBonus: 0, effect: "shield", desc: "刀枪不入，护体罡气" },
+        { name: "铁布衫", costMp: 3, dmgBonus: 0, effect: "shield", desc: "硬气功，减伤增效" },
+        { name: "金钟罩", costMp: 4, dmgBonus: 0, effect: "shield", desc: "护体罡气，固若金汤" },
+        { name: "葵花宝典", costMp: 5, dmgBonus: 18, effect: "crit", desc: "极速身法，致命一击" },
+        { name: "辟邪剑法", costMp: 5, dmgBonus: 17, effect: "crit", desc: "剑出诡异，防不胜防" },
+        { name: "吸星大法", costMp: 4, dmgBonus: 9, effect: "steal", desc: "吸取内力，补充己身" },
+        { name: "化功大法", costMp: 4, dmgBonus: 10, effect: "poison", desc: "化去内力，剧毒侵体" },
+        { name: "七伤拳", costMp: 5, dmgBonus: 18, effect: "selfharm", desc: "伤敌一千，自损八百" },
+        { name: "空明拳", costMp: 4, dmgBonus: 11, effect: "normal", desc: "以虚御实，拳法精妙" },
+        { name: "弹指神通", costMp: 3, dmgBonus: 9, effect: "stun", desc: "弹指惊雷，远程制敌" },
+        { name: "落英神剑掌", costMp: 4, dmgBonus: 12, effect: "normal", desc: "掌中带剑，剑中藏掌" },
+        { name: "玉女心经", costMp: 4, dmgBonus: 0, effect: "heal", desc: "清心寡欲，内力回复" },
+        { name: "先天功", costMp: 5, dmgBonus: 0, effect: "heal", desc: "先天真气，起死回生" },
+        { name: "一阳指", costMp: 4, dmgBonus: 10, effect: "heal", desc: "治病救人，亦可杀敌" },
+        { name: "兰花拂穴手", costMp: 3, dmgBonus: 8, effect: "stun", desc: "拂穴定身，优雅制敌" },
+        { name: "逍遥游", costMp: 3, dmgBonus: 6, effect: "dodge", desc: "逍遥自在，闪避自如" }
     ];
 
-    // 随机武学
+    // ==================== 扩展敌人库（20种，按层数强化）====================
+    const enemyTemplates = [
+        { name: "流寇刀客", baseHp: 28, baseAtk: 8, desc: "亡命之徒，刀法狠厉", armor: false },
+        { name: "黑衣死士", baseHp: 30, baseAtk: 9, desc: "沉默嗜杀，迅捷如风", armor: false },
+        { name: "魔教妖人", baseHp: 29, baseAtk: 8, desc: "毒蛊缠身，阴险狡诈", poison: true },
+        { name: "铁甲卫", baseHp: 36, baseAtk: 7, desc: "重甲厚盾，防御惊人", armor: true },
+        { name: "幽魂剑客", baseHp: 32, baseAtk: 10, desc: "剑意凄绝，身法诡谲", armor: false },
+        { name: "江湖败类", baseHp: 28, baseAtk: 8, desc: "专使暗器，防不胜防", poison: true },
+        { name: "少林叛僧", baseHp: 34, baseAtk: 9, desc: "金刚怒目，外家高手", armor: true },
+        { name: "青城弟子", baseHp: 30, baseAtk: 8, desc: "剑法轻灵，身法迅捷", armor: false },
+        { name: "崆峒长老", baseHp: 38, baseAtk: 10, desc: "七伤拳传人，刚猛霸道", armor: false },
+        { name: "华山剑客", baseHp: 31, baseAtk: 9, desc: "剑宗高手，剑法凌厉", armor: false },
+        { name: "嵩山高手", baseHp: 35, baseAtk: 9, desc: "大嵩阳掌，刚柔并济", armor: false },
+        { name: "恒山师太", baseHp: 33, baseAtk: 8, desc: "绵里藏针，守中带攻", armor: false },
+        { name: "衡山琴魔", baseHp: 30, baseAtk: 10, desc: "琴音杀敌，无形剑气", armor: false },
+        { name: "泰山剑圣", baseHp: 36, baseAtk: 10, desc: "泰山十八盘，剑重如山", armor: false },
+        { name: "明教法王", baseHp: 40, baseAtk: 12, desc: "乾坤大挪移，反弹伤害", counter: true },
+        { name: "丐帮帮主", baseHp: 38, baseAtk: 11, desc: "降龙掌法，刚猛无铸", armor: false },
+        { name: "全真道士", baseHp: 34, baseAtk: 9, desc: "天罡北斗，阵法加持", armor: false },
+        { name: "古墓传人", baseHp: 32, baseAtk: 10, desc: "玉女素心，剑法精妙", armor: false },
+        { name: "血刀门徒", baseHp: 35, baseAtk: 11, desc: "血刀刀法，嗜血狂攻", bleed: true },
+        { name: "星宿老怪", baseHp: 37, baseAtk: 10, desc: "化功大法，剧毒无比", poison: true }
+    ];
+
+    // ==================== 遗物库（12种）====================
+    const relicsDB = [
+        { name: "残破玉佩", effect: "hp", value: 5, desc: "气血上限+5" },
+        { name: "青铜古剑", effect: "atk", value: 3, desc: "攻击力+3" },
+        { name: "金刚护腕", effect: "def", value: 2, desc: "防御力+2" },
+        { name: "道家心经", effect: "mp", value: 8, desc: "内力上限+8" },
+        { name: "夜明珠", effect: "luck", value: 1, desc: "运气+1（暴击率提升）" },
+        { name: "金丝软甲", effect: "def", value: 3, desc: "防御力+3" },
+        { name: "千年人参", effect: "hp", value: 10, desc: "气血上限+10" },
+        { name: "龙泉宝剑", effect: "atk", value: 5, desc: "攻击力+5" },
+        { name: "易筋经残卷", effect: "heal_rate", value: 2, desc: "每回合回复2气血" },
+        { name: "洗髓丹", effect: "mp_regen", value: 2, desc: "每回合回复2内力" },
+        { name: "玄铁令", effect: "crit_rate", value: 10, desc: "暴击率+10%" },
+        { name: "武林圣火令", effect: "all", value: 3, desc: "全属性+3" }
+    ];
+
+    // 难度配置
+    const difficulties = {
+        easy: { name: "初入江湖", baseHp: 50, baseMp: 35, baseAtk: 14, baseDef: 5, enemyScale: 0.7, healRate: 0 },
+        normal: { name: "仗剑天涯", baseHp: 42, baseMp: 28, baseAtk: 12, baseDef: 3, enemyScale: 1.0, healRate: 0 },
+        hard: { name: "修罗炼狱", baseHp: 35, baseMp: 22, baseAtk: 10, baseDef: 1, enemyScale: 1.4, healRate: 0 }
+    };
+
+    let gameActive = false;
+    let currentFloor = 1;
+    let currentDifficulty = "normal";
+    let player = {
+        maxHp: 0, hp: 0, maxMp: 0, mp: 0, attack: 0, defense: 0,
+        skill1: null, skill2: null, skill3: null,
+        relics: [],
+        healRegen: 0, mpRegen: 0, critRate: 5
+    };
+    let currentEnemy = null;
+    let inBattle = false;
+    let lastActionMsg = "";
+
+    function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
     function getRandomMartial() {
-        return JSON.parse(JSON.stringify(martialArts[Math.floor(Math.random() * martialArts.length)]));
+        return JSON.parse(JSON.stringify(randomPick(martialArts)));
     }
 
-    // 敌人库 (按层数增强)
+    function getRandomRelic() {
+        let relic = JSON.parse(JSON.stringify(randomPick(relicsDB)));
+        if (player.relics.some(r => r.name === relic.name)) return getRandomRelic();
+        return relic;
+    }
+
+    function applyRelic(relic) {
+        switch(relic.effect) {
+            case "hp": player.maxHp += relic.value; player.hp += relic.value; break;
+            case "atk": player.attack += relic.value; break;
+            case "def": player.defense += relic.value; break;
+            case "mp": player.maxMp += relic.value; player.mp += relic.value; break;
+            case "all": player.maxHp += relic.value; player.hp += relic.value; player.attack += relic.value; player.defense += relic.value; player.maxMp += relic.value; player.mp += relic.value; break;
+            case "heal_rate": player.healRegen += relic.value; break;
+            case "mp_regen": player.mpRegen += relic.value; break;
+            case "crit_rate": player.critRate += relic.value; break;
+        }
+    }
+
     function getEnemyForFloor(floor) {
-        const baseHp = 28 + Math.floor(floor * 2.5);
-        const baseAtk = 8 + Math.floor(floor * 1.2);
-        const enemies = [
-            { name: "流寇刀客", hp: baseHp, attack: baseAtk, desc: "亡命之徒，刀法狠厉" },
-            { name: "黑衣死士", hp: baseHp+3, attack: baseAtk+1, desc: "沉默嗜杀，迅捷如风" },
-            { name: "魔教妖人", hp: baseHp+2, attack: baseAtk, desc: "毒蛊缠身，阴险狡诈" },
-            { name: "铁甲卫", hp: baseHp+6, attack: baseAtk-1, desc: "重甲厚盾，防御惊人", armor: true },
-            { name: "幽魂剑客", hp: baseHp+5, attack: baseAtk+2, desc: "剑意凄绝，身法诡谲" },
-            { name: "江湖败类", hp: baseHp+1, attack: baseAtk, desc: "专使暗器" }
-        ];
-        let idx = (floor-1) % enemies.length;
-        let e = { ...enemies[idx] };
-        e.currentHp = e.hp;
-        e.maxHp = e.hp;
-        return e;
+        let base = enemyTemplates[(floor - 1) % enemyTemplates.length];
+        let scale = difficulties[currentDifficulty].enemyScale;
+        let hpBonus = Math.floor(floor * 2.2 * scale);
+        let atkBonus = Math.floor(floor * 0.9 * scale);
+        let enemy = {
+            name: base.name,
+            maxHp: Math.floor(base.baseHp + hpBonus),
+            hp: Math.floor(base.baseHp + hpBonus),
+            attack: Math.floor(base.baseAtk + atkBonus),
+            desc: base.desc,
+            armor: base.armor || false,
+            poison: base.poison || false,
+            counter: base.counter || false,
+            bleed: base.bleed || false,
+            stunned: false
+        };
+        enemy.hp = enemy.maxHp;
+        return enemy;
     }
 
-    // 随机事件 (非战斗)
     function applyRandomEvent() {
         const events = [
-            { text: "你遇见云游医者，为你疗伤。❤️ +12", type: "heal", val: 12 },
-            { text: "拾得一本残破心法，内力上限提升。🌀 +8", type: "mp_max", val: 8 },
-            { text: "前辈武学感悟，攻击力永久+2。🗡️ +2", type: "atk", val: 2 },
-            { text: "误入毒瘴，气血受损。❤️ -8", type: "damage", val: 8 },
+            { text: "你遇见云游医者，为你疗伤。❤️ +15", type: "heal", val: 15 },
+            { text: "拾得一本残破心法，内力上限提升。🌀 +10", type: "mp_max", val: 10 },
+            { text: "前辈武学感悟，攻击力永久+3。🗡️ +3", type: "atk", val: 3 },
+            { text: "误入毒瘴，气血受损。❤️ -10", type: "damage", val: 10 },
             { text: "发现精酿烈酒，内力全部恢复。", type: "full_mp", val: 0 },
-            { text: "古老石碑，领悟剑意。最大气血+5", type: "hp_max", val: 5 },
+            { text: "古老石碑，领悟剑意。最大气血+8", type: "hp_max", val: 8 },
             { text: "遭遇江湖骗子，损失些许银两但无伤大雅。", type: "nothing", val: 0 },
-            { text: "神秘遗物「残破玉佩」: 攻击+1，最大气血+3", type: "relic", atkUp:1, hpUp:3, relicName:"残破玉佩" }
+            { text: "获得一件遗物！", type: "relic", val: 0 },
+            { text: "偶遇高人指点，防御力+2。🛡️ +2", type: "def", val: 2 },
+            { text: "山洞中发现灵泉，气血内力完全恢复。", type: "full", val: 0 }
         ];
-        let ev = events[Math.floor(Math.random() * events.length)];
+        let ev = randomPick(events);
         let msg = ev.text;
         switch(ev.type) {
-            case "heal":
-                player.hp = Math.min(player.maxHp, player.hp + ev.val);
-                break;
-            case "mp_max":
-                player.maxMp += ev.val;
-                player.mp += ev.val;
-                break;
-            case "atk":
-                player.attack += ev.val;
-                break;
-            case "damage":
-                player.hp = Math.max(0, player.hp - ev.val);
-                break;
-            case "full_mp":
-                player.mp = player.maxMp;
-                break;
-            case "hp_max":
-                player.maxHp += ev.val;
-                player.hp += ev.val;
-                break;
-            case "relic":
-                player.attack += ev.atkUp;
-                player.maxHp += ev.hpUp;
-                player.hp += ev.hpUp;
-                player.relics.push(ev.relicName);
-                msg += ` (攻击+${ev.atkUp}, 气血上限+${ev.hpUp})`;
-                break;
+            case "heal": player.hp = Math.min(player.maxHp, player.hp + ev.val); break;
+            case "mp_max": player.maxMp += ev.val; player.mp += ev.val; break;
+            case "atk": player.attack += ev.val; break;
+            case "def": player.defense += ev.val; break;
+            case "damage": player.hp = Math.max(0, player.hp - ev.val); break;
+            case "full_mp": player.mp = player.maxMp; break;
+            case "full": player.hp = player.maxHp; player.mp = player.maxMp; break;
+            case "hp_max": player.maxHp += ev.val; player.hp += ev.val; break;
+            case "relic": let newRelic = getRandomRelic(); player.relics.push(newRelic); applyRelic(newRelic); msg += ` 获得「${newRelic.name}」${newRelic.desc}`; break;
             default: break;
         }
         if(player.hp <= 0) return "dead";
         return { msg, eventApplied: true };
     }
 
-    // 战斗逻辑 (简易回合)
     function playerAttack(skillIdx) {
         if(!inBattle || !currentEnemy) return "error";
         let skill = null;
         let dmg = 0;
         let mpCost = 0;
         let feedback = "";
-        if(skillIdx === 0) { // 普攻
-            dmg = Math.floor(player.attack + Math.random() * 4);
+        let isCrit = false;
+        
+        if(skillIdx === 0) {
+            dmg = Math.floor(player.attack + Math.random() * 5);
             feedback = `⚔️ 普攻造成 ${dmg} 伤害。`;
-            currentEnemy.currentHp -= dmg;
+            currentEnemy.hp -= dmg;
         } else if(skillIdx === 1 && player.skill1) {
             skill = player.skill1;
             mpCost = skill.costMp;
             if(player.mp < mpCost) return "内力不足！";
             player.mp -= mpCost;
-            dmg = Math.floor(player.attack + skill.dmgBonus + Math.random() * 5);
+            dmg = Math.floor(player.attack + skill.dmgBonus + Math.random() * 6);
             feedback = `✨ 施展「${skill.name}」造成 ${dmg} 伤害！ ${skill.desc}`;
             if(skill.effect === "heal") {
-                let healVal = 8 + Math.floor(Math.random() * 6);
+                let healVal = 10 + Math.floor(Math.random() * 8);
                 player.hp = Math.min(player.maxHp, player.hp + healVal);
                 feedback += ` 气血恢复 ${healVal}。`;
             }
             if(skill.effect === "stun") {
-                // 眩晕效果：下回合敌人无法攻击 (简化跳过攻击)
-                feedback += ` 敌人被招式震慑，下回合无法出手！`;
                 currentEnemy.stunned = true;
+                feedback += ` 敌人被震慑，下回合无法出手！`;
             }
-            currentEnemy.currentHp -= dmg;
+            if(skill.effect === "dodge") feedback += ` 身法提升，闪避率增加。`;
+            if(skill.effect === "crit") { isCrit = true; dmg = Math.floor(dmg * 1.5); feedback = `✨ 暴击！${skill.name}造成 ${dmg} 伤害！`; }
+            if(skill.effect === "shield") { let shield = 5; player.defense += shield; feedback += ` 防御提升 ${shield}。`; }
+            if(skill.effect === "steal") { let stolen = 5; player.mp = Math.min(player.maxMp, player.mp + stolen); feedback += ` 吸取 ${stolen} 内力。`; }
+            if(skill.effect === "burn") { currentEnemy.burning = true; feedback += ` 敌人被灼烧，每回合损失气血。`; }
+            currentEnemy.hp -= dmg;
         } else if(skillIdx === 2 && player.skill2) {
             skill = player.skill2;
             mpCost = skill.costMp;
             if(player.mp < mpCost) return "内力不足！";
             player.mp -= mpCost;
-            dmg = Math.floor(player.attack + skill.dmgBonus + Math.random() * 5);
+            dmg = Math.floor(player.attack + skill.dmgBonus + Math.random() * 6);
             feedback = `✨ 施展「${skill.name}」造成 ${dmg} 伤害！ ${skill.desc}`;
             if(skill.effect === "heal") {
-                let healVal = 8 + Math.floor(Math.random() * 6);
+                let healVal = 10 + Math.floor(Math.random() * 8);
                 player.hp = Math.min(player.maxHp, player.hp + healVal);
                 feedback += ` 气血恢复 ${healVal}。`;
             }
-            if(skill.effect === "stun") {
-                currentEnemy.stunned = true;
-                feedback += ` 敌人被招式震慑，下回合无法出手！`;
-            }
-            currentEnemy.currentHp -= dmg;
-        } else return "无效招式";
+            if(skill.effect === "stun") { currentEnemy.stunned = true; feedback += ` 敌人被震慑！`; }
+            if(skill.effect === "crit") { dmg = Math.floor(dmg * 1.5); feedback = `✨ 暴击！${skill.name}造成 ${dmg} 伤害！`; }
+            if(skill.effect === "steal") { let stolen = 5; player.mp = Math.min(player.maxMp, player.mp + stolen); feedback += ` 吸取 ${stolen} 内力。`; }
+            currentEnemy.hp -= dmg;
+        }
         
-        if(currentEnemy.currentHp <= 0) {
+        if(currentEnemy.hp <= 0) {
             inBattle = false;
             return { victory: true, msg: feedback + ` 你击败了${currentEnemy.name}！` };
         }
-        // 敌人反击
-        let enemyDmg = Math.max(1, Math.floor(currentEnemy.attack + Math.random() * 6 - 2));
+        
+        let enemyDmg = Math.max(1, Math.floor(currentEnemy.attack + Math.random() * 5 - player.defense/2));
         if(currentEnemy.stunned) {
             currentEnemy.stunned = false;
             return { victory: false, msg: feedback + ` 敌人被眩晕，无法攻击。` };
         }
-        player.hp -= enemyDmg;
-        let enemyMsg = ` ${currentEnemy.name}反击造成 ${enemyDmg} 伤害。`;
-        if(player.hp <= 0) return { dead: true, msg: feedback + enemyMsg + " 你力竭而亡……"};
-        return { victory: false, msg: feedback + enemyMsg, enemyHpPercent: (currentEnemy.currentHp/currentEnemy.maxHp) };
+        if(currentEnemy.counter && Math.random() < 0.3) {
+            player.hp -= Math.floor(enemyDmg * 0.7);
+            feedback += ` 敌人触发反击，造成 ${Math.floor(enemyDmg * 0.7)} 伤害！`;
+        } else {
+            player.hp -= enemyDmg;
+            feedback += ` ${currentEnemy.name}反击造成 ${enemyDmg} 伤害。`;
+        }
+        if(player.hp <= 0) return { dead: true, msg: feedback + " 你力竭而亡……"};
+        return { victory: false, msg: feedback };
     }
 
-    // 刷新UI
     function updateUI() {
         document.getElementById("hpValue").innerText = player.hp;
         document.getElementById("maxHpValue").innerText = player.maxHp;
         document.getElementById("mpValue").innerText = player.mp;
         document.getElementById("maxMpValue").innerText = player.maxMp;
         document.getElementById("atkValue").innerText = player.attack;
+        document.getElementById("defValue").innerText = player.defense;
         document.getElementById("floorValue").innerText = currentFloor;
+        let relicHtml = player.relics.length ? "📦 遗物: " + player.relics.map(r => r.name).join(" · ") : "";
+        document.getElementById("relicDisplay").innerHTML = relicHtml;
     }
 
     function renderScene() {
@@ -396,14 +479,15 @@
         const storyDiv = document.getElementById("storyText");
         const choicesDiv = document.getElementById("choicesContainer");
         if(!gameActive) {
-            storyDiv.innerHTML = "生死轮回，幽冥渊沉寂。<br>按【开始闯关】重入江湖。";
+            storyDiv.innerHTML = "生死轮回，幽冥渊沉寂。<br>选择难度，开始你的试炼。";
             choicesDiv.innerHTML = `<button class="action-btn" id="startGameBtn"><span class="prefix-icon">⚡</span><span>开始闯关 · 入幽冥渊</span></button>`;
             const newBtn = document.getElementById("startGameBtn");
             if(newBtn) newBtn.addEventListener("click", () => initNewGame());
             return;
         }
         if(inBattle && currentEnemy) {
-            storyDiv.innerHTML = `⚔️ 战斗 ⚔️ 第 ${currentFloor} 层<br>敌人：${currentEnemy.name}  | ❤️ ${currentEnemy.currentHp}/${currentEnemy.maxHp}<br>「${currentEnemy.desc}」<br><br>你的气血：${player.hp}/${player.maxHp}  内力：${player.mp}/${player.maxMp}`;
+            let burnText = currentEnemy.burning ? " 🔥灼烧中" : "";
+            storyDiv.innerHTML = `⚔️ 战斗 ⚔️ 第 ${currentFloor} 层<br>敌人：${currentEnemy.name}  | ❤️ ${currentEnemy.hp}/${currentEnemy.maxHp}${burnText}<br>「${currentEnemy.desc}」<br><br>你的气血：${player.hp}/${player.maxHp}  内力：${player.mp}/${player.maxMp}`;
             choicesDiv.innerHTML = `
                 <button class="action-btn" id="attackBtn"><span class="prefix-icon">⚔️</span><span>普通攻击</span></button>
                 <button class="action-btn" id="skill1Btn"><span class="prefix-icon">🌀</span><span>${player.skill1.name} (${player.skill1.costMp}内力) · ${player.skill1.desc}</span></button>
@@ -414,7 +498,6 @@
             document.getElementById("skill2Btn")?.addEventListener("click", () => battleHandler(2));
             return;
         } else {
-            // 非战斗状态，进入下一层/事件/过关
             if(currentFloor > 18) {
                 storyDiv.innerHTML = `🎉 恭喜！你闯过了幽冥渊十八层！🎉<br>武林震动，你成为新一代燕云传说。\n【结局 · 破境飞升】\n重开游戏可继续挑战。`;
                 choicesDiv.innerHTML = `<button class="action-btn" id="restartAfterWin"><span class="prefix-icon">🏆</span><span>重入轮回</span></button>`;
@@ -422,8 +505,10 @@
                 gameActive = false;
                 return;
             }
-            // 触发随机事件或战斗？每层有80%战斗，20%奇遇
-            let isEvent = Math.random() < 0.25; 
+            if(player.healRegen > 0) { player.hp = Math.min(player.maxHp, player.hp + player.healRegen); }
+            if(player.mpRegen > 0) { player.mp = Math.min(player.maxMp, player.mp + player.mpRegen); }
+            
+            let isEvent = Math.random() < 0.25;
             if(isEvent) {
                 let eventRes = applyRandomEvent();
                 if(eventRes === "dead" || player.hp <= 0) {
@@ -446,7 +531,6 @@
                 updateUI();
                 return;
             } else {
-                // 战斗
                 currentEnemy = getEnemyForFloor(currentFloor);
                 inBattle = true;
                 renderScene();
@@ -459,8 +543,7 @@
         if(!inBattle || !gameActive) return;
         let result = playerAttack(action);
         if(result === "内力不足！") {
-            const storyDiv = document.getElementById("storyText");
-            storyDiv.innerHTML = `⚠️ 内力不足，无法施展武学！\n\n请重新选择。`;
+            document.getElementById("storyText").innerHTML = `⚠️ 内力不足，无法施展武学！\n\n请重新选择。`;
             return;
         }
         if(result === "error") return;
@@ -468,20 +551,15 @@
             gameActive = false;
             inBattle = false;
             updateUI();
-            const storyDiv = document.getElementById("storyText");
-            storyDiv.innerHTML = `💀 血战不敌，你在第 ${currentFloor} 层陨落。\n${result.msg}\n\n江湖路远，来世再续。`;
-            const choicesDiv = document.getElementById("choicesContainer");
-            choicesDiv.innerHTML = `<button class="action-btn" id="deadResetBtn"><span class="prefix-icon">🔄</span><span>重入轮回</span></button>`;
+            document.getElementById("storyText").innerHTML = `💀 血战不敌，你在第 ${currentFloor} 层陨落。\n${result.msg}\n\n江湖路远，来世再续。`;
+            document.getElementById("choicesContainer").innerHTML = `<button class="action-btn" id="deadResetBtn"><span class="prefix-icon">🔄</span><span>重入轮回</span></button>`;
             document.getElementById("deadResetBtn")?.addEventListener("click", () => initNewGame());
             return;
         }
         if(result && result.victory) {
             inBattle = false;
-            // 胜利后增加层数
             currentFloor++;
-            updateUI();
-            // 恢复少量内力
-            player.mp = Math.min(player.maxMp, player.mp + 3);
+            player.mp = Math.min(player.maxMp, player.mp + 4);
             startFloorCombatOrEvent();
             renderScene();
             return;
@@ -492,16 +570,13 @@
                 inBattle = false;
                 updateUI();
                 document.getElementById("storyText").innerHTML = `💀 战斗致死... 你已魂归幽冥。止步 ${currentFloor} 层。`;
-                const choicesDiv = document.getElementById("choicesContainer");
-                choicesDiv.innerHTML = `<button class="action-btn" id="deadResetBtn2"><span class="prefix-icon">🔄</span><span>重入轮回</span></button>`;
+                document.getElementById("choicesContainer").innerHTML = `<button class="action-btn" id="deadResetBtn2"><span class="prefix-icon">🔄</span><span>重入轮回</span></button>`;
                 document.getElementById("deadResetBtn2")?.addEventListener("click", () => initNewGame());
                 return;
             }
             updateUI();
-            const storyDiv = document.getElementById("storyText");
-            storyDiv.innerHTML = `⚔️ 战斗续报 ⚔️<br>${result.msg}<br><br>敌人剩余 ${currentEnemy.currentHp}/${currentEnemy.maxHp} 气血。`;
-            const choicesDiv = document.getElementById("choicesContainer");
-            choicesDiv.innerHTML = `
+            document.getElementById("storyText").innerHTML = `⚔️ 战斗续报 ⚔️<br>${result.msg}<br><br>敌人剩余 ${currentEnemy.hp}/${currentEnemy.maxHp} 气血。`;
+            document.getElementById("choicesContainer").innerHTML = `
                 <button class="action-btn" id="attackBtn2"><span class="prefix-icon">⚔️</span><span>普通攻击</span></button>
                 <button class="action-btn" id="skill1Btn2"><span class="prefix-icon">🌀</span><span>${player.skill1.name} (${player.skill1.costMp}内力)</span></button>
                 <button class="action-btn" id="skill2Btn2"><span class="prefix-icon">🌀</span><span>${player.skill2.name} (${player.skill2.costMp}内力)</span></button>
@@ -526,31 +601,35 @@
         currentFloor = 1;
         inBattle = false;
         currentEnemy = null;
-        // 初始属性
-        let baseHp = 42;
-        let baseMp = 28;
-        let baseAtk = 12;
-        player.maxHp = baseHp;
-        player.hp = baseHp;
-        player.maxMp = baseMp;
-        player.mp = baseMp;
-        player.attack = baseAtk;
+        let diff = difficulties[currentDifficulty];
+        player.maxHp = diff.baseHp;
+        player.hp = diff.baseHp;
+        player.maxMp = diff.baseMp;
+        player.mp = diff.baseMp;
+        player.attack = diff.baseAtk;
+        player.defense = diff.baseDef;
         player.relics = [];
-        // 随机两门武学
+        player.healRegen = 0;
+        player.mpRegen = 0;
+        player.critRate = 5;
+        
         let ma1 = getRandomMartial();
         let ma2 = getRandomMartial();
         while(ma2.name === ma1.name) ma2 = getRandomMartial();
-        player.skill1 = { name: ma1.name, desc: ma1.desc, costMp: ma1.costMp, dmgBonus: ma1.dmgBonus, effect: ma1.effect };
-        player.skill2 = { name: ma2.name, desc: ma2.desc, costMp: ma2.costMp, dmgBonus: ma2.dmgBonus, effect: ma2.effect };
+        player.skill1 = ma1;
+        player.skill2 = ma2;
+        
         updateUI();
-        const storyDiv = document.getElementById("storyText");
-        storyDiv.innerHTML = `你重生入幽冥渊，初始武学：「${player.skill1.name}」「${player.skill2.name}」<br>气血 ${player.hp} 内力 ${player.mp} 攻击 ${player.attack}<br>第一层，风雨欲来...`;
+        document.getElementById("storyText").innerHTML = `你重生入幽冥渊，难度：${difficulties[currentDifficulty].name}<br>初始武学：「${player.skill1.name}」「${player.skill2.name}」<br>气血 ${player.hp} 内力 ${player.mp} 攻击 ${player.attack}<br>第一层，风雨欲来...`;
         startFloorCombatOrEvent();
         renderScene();
     }
 
     document.getElementById("resetGameBtn").addEventListener("click", () => initNewGame());
-    // 初次启动显示开始按钮
+    document.getElementById("easyDiff").addEventListener("click", () => { currentDifficulty = "easy"; initNewGame(); });
+    document.getElementById("normalDiff").addEventListener("click", () => { currentDifficulty = "normal"; initNewGame(); });
+    document.getElementById("hardDiff").addEventListener("click", () => { currentDifficulty = "hard"; initNewGame(); });
+    
     gameActive = false;
     renderScene();
 </script>
