@@ -22,21 +22,20 @@
         }
 
         .hall-container {
-            max-width: 1100px;
+            max-width: 1200px;
             width: 100%;
         }
 
-        /* 标题区 */
         .title-area {
             text-align: center;
             margin-bottom: 48px;
         }
 
         .title-area h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: #e8c68a;
             text-shadow: 4px 4px 0 #3a2a1a;
-            letter-spacing: 8px;
+            letter-spacing: 10px;
         }
 
         .title-area p {
@@ -46,7 +45,6 @@
             font-style: italic;
         }
 
-        /* 双卡牌布局 */
         .game-cards {
             display: flex;
             flex-wrap: wrap;
@@ -56,11 +54,11 @@
 
         .card {
             flex: 1;
-            min-width: 280px;
+            min-width: 300px;
             background: #1e1b16e6;
             backdrop-filter: blur(4px);
             border-radius: 48px 24px 56px 24px;
-            padding: 28px 24px 36px;
+            padding: 32px 28px 40px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -100,6 +98,16 @@
             font-size: 0.95rem;
         }
 
+        .card .stats-badge {
+            display: inline-block;
+            background: #4a3a28;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin: 10px 5px;
+            color: #e8c68a;
+        }
+
         .card-btn {
             display: inline-block;
             background: #7a5a3a;
@@ -117,7 +125,6 @@
             color: white;
         }
 
-        /* 脚注 */
         .footer-note {
             text-align: center;
             margin-top: 56px;
@@ -127,7 +134,7 @@
 
         @media (max-width: 700px) {
             .title-area h1 { font-size: 2rem; letter-spacing: 4px; }
-            .card { min-width: 260px; }
+            .card { min-width: 260px; padding: 24px 20px; }
         }
     </style>
 </head>
@@ -138,33 +145,41 @@
         <p>双生江湖 · 一念侠客 一念修罗</p>
     </div>
     <div class="game-cards">
-        <!-- 江湖行 · 剧情冒险 -->
         <div class="card" onclick="location.href='jianghu.html'">
             <div class="card-icon">📜</div>
             <h2>江湖行</h2>
             <div class="sub">· 剧情冒险 ·</div>
             <div class="desc">
                 多线叙事，命运由心。<br>
-                侠义值 × 武学悟性，十几种结局。<br>
-                体验沉浸式武侠人生。
+                侠义值 × 武学悟性，数十种结局。<br>
+                沉浸式武侠人生体验。
+            </div>
+            <div>
+                <span class="stats-badge">🎭 20+ 结局</span>
+                <span class="stats-badge">📖 可组合文本</span>
             </div>
             <span class="card-btn">踏入江湖 →</span>
         </div>
 
-        <!-- 百战燕云 · Roguelike地牢 -->
         <div class="card" onclick="location.href='baizhan.html'">
             <div class="card-icon">⚔️</div>
             <h2>百战燕云</h2>
             <div class="sub">· Roguelike 地牢 ·</div>
             <div class="desc">
-                永久死亡 · 随机武学 · 百层幽冥<br>
+                永久死亡 · 随机武学 · 幽冥渊试炼<br>
                 每一次都是全新的死斗。
+            </div>
+            <div>
+                <span class="stats-badge">💀 永久死亡</span>
+                <span class="stats-badge">🌀 30+ 武学</span>
+                <span class="stats-badge">🎲 随机奇遇</span>
             </div>
             <span class="card-btn">入幽冥渊 →</span>
         </div>
     </div>
     <div class="footer-note">
-        🎋 燕云十六州 · 风云再起 | 选择你的江湖路
+        🎋 燕云十六州 · 风云再起 | 选择你的江湖路<br>
+        📜 游戏内容持续扩展中 | 每次重玩都有新体验
     </div>
 </div>
 </body>
