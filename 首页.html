@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>首页 - 多选导航</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .link-item {
+            margin: 12px 0;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h2>🌐 请选择要打开的页面：</h2>
+
+    <div class="link-item">
+        <label>
+            <input type="checkbox" value="page1.html">
+            📄 页面1 - 介绍信息
+        </label>
+    </div>
+
+    <div class="link-item">
+        <label>
+            <input type="checkbox" value="page2.html">
+            📄 页面2 - 更多内容
+        </label>
+    </div>
+
+    <!-- 你也可以加外部链接 -->
+    <div class="link-item">
+        <label>
+            <input type="checkbox" value="https://github.com">
+            🔗 GitHub（外部）
+        </label>
+    </div>
+
+    <br>
+    <button onclick="openSelected()">🚀 打开选中的页面</button>
+
+    <script>
+        function openSelected() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+            if (checkboxes.length === 0) {
+                alert("请至少选择一个页面");
+                return;
+            }
+
+            // 依次打开所有选中的链接
+            checkboxes.forEach(cb => {
+                window.open(cb.value, '_blank');
+            });
+        }
+    </script>
+</body>
+</html>
